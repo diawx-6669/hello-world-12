@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowMind · Liquidity OS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo"><span>F</span></div>
+  <button class="nav-item active" onclick="FlowApp.switchTab('dashboard', event.currentTarget)" title="Dashboard">
+    <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+  </button>
+  <button class="nav-item" onclick="FlowApp.switchTab('register', event.currentTarget)" title="Registration">
+    <i class="ti ti-user-plus" aria-hidden="true"></i>
+  </button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">FlowMind · <span id="current-section">Инфраструктура</span></div>
+    <div class="topbar-right">
+      <!-- Search -->
+      <div class="search-wrap">
+        <i class="ti ti-search search-icon" aria-hidden="true"></i>
+        <input type="text" id="search-input" class="search-input" placeholder="Поиск…" autocomplete="off">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="status-dot"></div>
+        <span class="status-label">СИСТЕМА АКТИВНА</span>
+      </div>
+      <div class="time-display" id="clock"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD TAB ════════════════════════════════════════════════ -->
+    <div id="dashboard" class="tab-content active">
+
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="FlowApp.switchDashboardTab(this, 'overview')">ОБЗОР</button>
+        <button class="tab-btn" onclick="FlowApp.switchDashboardTab(this, 'accounts')">СЧЕТА</button>
+        <button class="tab-btn" onclick="FlowApp.switchDashboardTab(this, 'transactions')">ТРАНЗАКЦИИ</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div id="overview" class="tab-content active">
+
+        <!-- Metric cards -->
+        <div class="metric-row">
+          <div class="metric-card accent-green">
+            <div class="metric-label"><i class="ti ti-trending-up" aria-hidden="true"></i> ОБЪЕМ TPS</div>
+            <div class="metric-value" id="tps">12,847</div>
+            <div class="metric-delta delta-pos">↑ +2.4% от целевого</div>
+          </div>
+          <div class="metric-card accent-amber">
+            <div class="metric-label"><i class="ti ti-clock" aria-hidden="true"></i> СРЕДНЕЕ ВРЕМЯ</div>
+            <div class="metric-value">2.34s</div>
+            <div class="metric-delta delta-warn">⏳ Выше нормы</div>
+          </div>
+          <div class="metric-card accent-green">
+            <div class="metric-label"><i class="ti ti-check" aria-hidden="true"></i> УСПЕШНЫХ TX</div>
+            <div class="metric-value">99.8%</div>
+            <div class="metric-delta delta-pos">↑ +0.2% на неделю</div>
+          </div>
+          <div class="metric-card accent-red">
+            <div class="metric-label"><i class="ti ti-alert-circle" aria-hidden="true"></i> СБОЕВ</div>
+            <div class="metric-value">4</div>
+            <div class="metric-delta delta-neg">⚠ Требует внимания</div>
+          </div>
+        </div>
+
+        <!-- Chart + Alerts -->
+        <div class="mid-row">
+          <div class="chart-card">
+            <div class="card-header">
+              <div class="card-title">ОБЪЕМ ПЛАТЕЖЕЙ · 24Ч</div>
+              <div class="tab-group">
+                <button class="tab active" onclick="FlowApp.switchChart(this)">24H</button>
+                <button class="tab" onclick="FlowApp.switchChart(this)">7D</button>
+                <button class="tab" onclick="FlowApp.switchChart(this)">30D</button>
+              </div>
+            </div>
+            <div class="chart-area">
+              <svg class="chart-svg" viewBox="0 0 500 160" aria-label="Payment volume chart">
+                <defs>
+                  <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:rgba(16,185,129,0.4);stop-opacity:1"/>
+                    <stop offset="100%" style="stop-color:rgba(16,185,129,0);stop-opacity:1"/>
+                  </linearGradient>
+                </defs>
+                <polyline points="10,120 60,80 110,70 160,85 210,45 260,55 310,35 360,65 410,50 460,75"
+                  fill="none" stroke="var(--green)" stroke-width="2"/>
+                <polygon points="10,120 60,80 110,70 160,85 210,45 260,55 310,35 360,65 410,50 460,75 460,160 10,160"
+                  fill="url(#grad1)"/>
+                <circle cx="210" cy="45" r="4" fill="var(--green)"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Alerts panel -->
+          <div class="alerts-card">
+            <div class="card-title" style="margin-bottom:12px">АКТИВНЫЕ АЛЕРТЫ</div>
+            <div id="alerts-container">
+              <!-- Populated by API / fallback -->
+              <div class="alert-item">
+                <div class="alert-dot red"></div>
+                <div>
+                  <div class="alert-text">Высокая нагрузка на SWIFT ноде</div>
+                  <div class="alert-meta">1 мин назад</div>
+                  <span class="alert-badge badge-red">КРИТИЧНО</span>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-dot amber"></div>
+                <div>
+                  <div class="alert-text">Задержка синхронизации SEPA</div>
+                  <div class="alert-meta">8 мин назад</div>
+                  <span class="alert-badge badge-amber">ВНИМАНИЕ</span>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-dot amber"></div>
+                <div>
+                  <div class="alert-text">Высокая волатильность курса</div>
+                  <div class="alert-meta">15 мин назад</div>
+                  <span class="alert-badge badge-amber">ВНИМАНИЕ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounts table + Pulse feed -->
+        <div class="bot-row">
+          <div class="chart-card">
+            <div class="card-header">
+              <div class="card-title">КАРТА СЧЕТОВ · НОСТРО / КОРРЕСПОНДЕНТ</div>
+            </div>
+            <table class="accounts-table">
+              <thead>
+                <tr>
+                  <th>Банк</th><th>Вал.</th><th>Баланс</th><th>Загрузка</th><th>Статус</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="bank-name">Deutsche Bank</span></td>
+                  <td><span class="currency-tag">EUR</span></td>
+                  <td style="color:var(--red)">€8.2M</td>
+                  <td><div class="bar-wrap"><div class="bar-fill" style="width:82%;background:var(--red)"></div></div></td>
+                  <td style="color:var(--red);font-size:10px">⚠ Риск</td>
+                </tr>
+                <tr>
+                  <td><span class="bank-name">Barclays</span></td>
+                  <td><span class="currency-tag">GBP</span></td>
+                  <td style="color:var(--green)">£14.7M</td>
+                  <td><div class="bar-wrap"><div class="bar-fill" style="width:38%;background:var(--green)"></div></div></td>
+                  <td style="color:var(--green);font-size:10px">✓ Норма</td>
+                </tr>
+                <tr>
+                  <td><span class="bank-name">JPMorgan Chase</span></td>
+                  <td><span class="currency-tag">USD</span></td>
+                  <td style="color:var(--green)">$22.1M</td>
+                  <td><div class="bar-wrap"><div class="bar-fill" style="width:55%;background:var(--green)"></div></div></td>
+                  <td style="color:var(--green);font-size:10px">✓ Норма</td>
+                </tr>
+                <tr>
+                  <td><span class="bank-name">Mizuho</span></td>
+                  <td><span class="currency-tag">JPY</span></td>
+                  <td style="color:var(--amber)">¥1.82B</td>
+                  <td><div class="bar-wrap"><div class="bar-fill" style="width:67%;background:var(--amber)"></div></div></td>
+                  <td style="color:var(--amber);font-size:10px">⏳ Задержка</td>
+                </tr>
+                <tr>
+                  <td><span class="bank-name">UBS</span></td>
+                  <td><span class="currency-tag">CHF</span></td>
+                  <td style="color:var(--green)">₣4.3M</td>
+                  <td><div class="bar-wrap"><div class="bar-fill" style="width:22%;background:var(--green)"></div></div></td>
+                  <td style="color:var(--green);font-size:10px">✓ Норма</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="chart-card">
+            <div class="card-header">
+              <div class="card-title">ПУЛЬС ТРАНЗАКЦИЙ · LIVE</div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite"></div>
+                <span style="font-size:10px;color:var(--green);font-family:var(--mono)" id="feed-count">0 сегодня</span>
+              </div>
+            </div>
+            <div class="pulse-feed" id="pulse-feed"></div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <div style="flex:1;background:var(--bg3);border-radius:8px;padding:8px 10px;text-align:center">
+                <div style="font-size:9px;color:var(--muted);margin-bottom:3px">SEPA</div>
+                <div style="font-size:13px;font-family:var(--mono);color:var(--blue)">48%</div>
+              </div>
+              <div style="flex:1;background:var(--bg3);border-radius:8px;padding:8px 10px;text-align:center">
+                <div style="font-size:9px;color:var(--muted);margin-bottom:3px">SWIFT</div>
+                <div style="font-size:13px;font-family:var(--mono);color:var(--green)">31%</div>
+              </div>
+              <div style="flex:1;background:var(--bg3);border-radius:8px;padding:8px 10px;text-align:center">
+                <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Карты</div>
+                <div style="font-size:13px;font-family:var(--mono);color:var(--amber)">21%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Infrastructure health -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="card-title">ИНДИКАТОР ЗДОРОВЬЯ ИНФРАСТРУКТУРЫ</div>
+            <button
+              onclick="FlowApp.runScenario('стресс-тест — скачок транзакций +300%')"
+              style="font-size:10px;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:4px 12px;border-radius:6px;cursor:pointer">
+              Что если? ↗
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+            <div style="text-align:center">
+              <div style="font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.06em">ПЛАТЕЖНЫЕ GW</div>
+              <div style="font-size:18px;font-family:var(--mono);font-weight:700;color:var(--green)">99.2%</div>
+              <div style="font-size:9px;color:var(--green)">Работает</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.06em">КЛИРИНГ SEPA</div>
+              <div style="font-size:18px;font-family:var(--mono);font-weight:700;color:var(--green)">98.8%</div>
+              <div style="font-size:9px;color:var(--green)">Работает</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.06em">SWIFT СЕТЬ</div>
+              <div style="font-size:18px;font-family:var(--mono);font-weight:700;color:var(--amber)">91.4%</div>
+              <div style="font-size:9px;color:var(--amber)">Задержка</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.06em">КАРТОЧНЫЙ EQ</div>
+              <div style="font-size:18px;font-family:var(--mono);font-weight:700;color:var(--green)">99.7%</div>
+              <div style="font-size:9px;color:var(--green)">Работает</div>
+            </div>
+            <div style="text-align:center;border-left:1px solid var(--border);padding-left:10px">
+              <div style="font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:0.06em">ОБЩИЙ ИНДЕКС</div>
+              <div style="font-size:22px;font-family:var(--mono);font-weight:700;color:var(--green)" id="health-score">97.3%</div>
+              <div style="font-size:9px;color:var(--green)">Устойчиво</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /overview -->
+
+      <!-- ACCOUNTS TAB (placeholder) -->
+      <div id="accounts" class="tab-content">
+        <div class="chart-card">
+          <div class="card-title" style="margin-bottom:14px">СЧЕТА — ПОЛНЫЙ СПИСОК</div>
+          <p style="color:var(--muted);font-size:12px">Данные загружаются через <code>GET /api/accounts</code></p>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS TAB (placeholder) -->
+      <div id="transactions" class="tab-content">
+        <div class="chart-card">
+          <div class="card-title" style="margin-bottom:14px">ИСТОРИЯ ТРАНЗАКЦИЙ</div>
+          <p style="color:var(--muted);font-size:12px">Данные загружаются через <code>GET /api/transactions/feed</code></p>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+
+    <!-- ═══ REGISTER TAB ═════════════════════════════════════════════════ -->
+    <div id="register" class="tab-content">
+      <div style="max-width:700px;margin:0 auto">
+
+        <!-- User info (post-registration) -->
+        <div id="user-info" class="user-info">
+          <div class="user-left">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <div class="user-details">
+              <p id="user-name">User Name</p>
+              <p id="user-region">Region</p>
+            </div>
+          </div>
+          <button class="logout-btn" onclick="FlowApp.logout()">Выход</button>
+        </div>
+
+        <!-- Success message -->
+        <div id="success-msg" class="success-message" role="alert">
+          <i class="ti ti-check" style="font-size:16px"></i>
+          <span>Регистрация успешна! Ваши доступные платёжные системы готовы к использованию.</span>
+        </div>
+
+        <!-- Registration form -->
+        <div id="register-form" class="register-form">
+          <h2 style="font-size:18px;margin-bottom:24px;color:var(--text)">Регистрация в FlowMind</h2>
+
+          <div class="form-group">
+            <label class="form-label" for="fullname">Полное имя</label>
+            <input type="text" id="fullname" class="form-input" placeholder="Иван Петров" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" class="form-input" placeholder="your@email.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="company">Компания</label>
+            <input type="text" id="company" class="form-input" placeholder="ООО Финтех" required autocomplete="organization">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="region">Выберите регион</label>
+            <select id="region" class="form-select" required onchange="FlowApp.updateSystems()">
+              <option value="">-- Выберите регион --</option>
+              <option value="europe">🇪🇺 Европа</option>
+              <option value="asia">🌏 Азия</option>
+              <option value="americas">🌎 Америка</option>
+              <option value="middle-east">🌍 Ближний Восток &amp; Африка</option>
+            </select>
+          </div>
+
+          <button class="form-button" onclick="FlowApp.registerUser()">Зарегистрироваться</button>
+        </div>
+
+        <!-- Region info & systems -->
+        <div id="region-info" class="region-info">
+          <div class="region-header">
+            <div class="region-flag" id="region-flag">🇪🇺</div>
+            <div class="region-details">
+              <h3 id="region-name">Европа</h3>
+              <p id="region-desc">Основная система платежей на территории ЕС</p>
+            </div>
+          </div>
+          <div class="card-title" style="margin-bottom:12px">ДОСТУПНЫЕ ПЛАТЁЖНЫЕ СИСТЕМЫ</div>
+          <div class="systems-grid" id="systems-grid"></div>
+        </div>
+
+      </div>
+    </div><!-- /register -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Scripts: load order matters — data → ui → search → app -->
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/search.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
